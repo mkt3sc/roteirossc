@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de QR Code</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        #qrcode {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="qr-input" placeholder="Digite o texto ou URL para o QR Code">
+        <button onclick="generateQR()">Gerar QR Code</button>
+        <div id="qrcode"></div>
+        <button onclick="downloadSVG()">Baixar SVG</button>
+        <button onclick="downloadPNG()">Baixar PNG</button>
+    </div>
+
+    <script>
+        let qr;
+        function generateQR() {
+            const text = document.getElementById('qr-input').value;
+            if(text) {
+                if(qr) qr.clear();
+                qr = new QRCode(document.getElementById('qrcode'), {
+                    text: text,
+                    width: 256,
+                    height: 256
+                });
+            }
+        }
+
+        function downloadSVG() {
+            const svg = document.querySelector('#qrcode svg');
+            if(svg) {
+                const svgData = new XMLSerializer().serializeToString(svg);
+                const svgBlob = new Blob([svgData], {type: 'image/svg+xml;charset=utf-8'});
+                const svgUrl = URL.createObjectURL(svgBlob);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = svgUrl;
+                downloadLink.download = 'qrcode.svg';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        }
+
+        function downloadPNG() {
+            const canvas = document.querySelector('#qrcode canvas');
+            if(canvas) {
+                const pngUrl = canvas.toDataURL('image/png');
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pngUrl;
+                downloadLink.download = 'qrcode.png';
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+            }
+        }
+    </script>
+</body>
+</html>
